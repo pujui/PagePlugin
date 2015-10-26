@@ -8,6 +8,8 @@
         <link href="css/bootstrap.min.css" rel="stylesheet">
         <!-- Custom CSS -->
         <link href="css/1-col-portfolio.css" rel="stylesheet">
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script src="js/PagePlugin.js"></script>
     </head>
 
     <body>
@@ -15,8 +17,11 @@
             <table class="table table-striped table-bordered">
                 <thead>
                     <tr>
-                        <th><a href="#Documentation" >Documentation</a></th>
-                        <th><a href="#Examples" >Examples</a></th>
+                        <th colspan="2"><a href="#Documentation" >Documentation</a></th>
+                    </tr>
+                    <tr>
+                        <th><a href="#ExamplesGet" >Examples Get</a></th>
+                        <th><a href="#ExamplesPost" >Examples Post</a></th>
                     </tr>
                 </thead>
             </table>
@@ -137,38 +142,10 @@
                                             <td>樣板參數
                                                 {url} {prevPage}
                                                 {page} {nextPage}
-                                                {params} {nowPage} 
+                                                {urlParams} {nowPage} 
                                                 {totalNumber}
                                             </td>
                                             <td></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <table class="table table-striped table-bordered" id="Examples" >
-                                    <thead>
-                                        <tr>
-                                            <th colspan="4">Examples</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td colspan="4">
-                                            HTML:
-                                            <pre>&lt;div id="page" config="default" &gt;&lt;/div&gt;</pre>
-                                            JAVASCRIPT:
-                            <pre>
-    $('#page').pagePlugin(function(r){
-            var result = '';
-            result += this.genPage('&lt;a href="{url}?page={prevPage}{params}" &gt;prev&lt;/a&gt;&nbsp;');
-            result += this.genLoopPage(
-                        '&lt;a href="{url}?page={page}{params}" &gt;{page}&lt;/a&gt;&nbsp;',
-                        '{page}&nbsp;'
-                      );
-            result += this.genPage('&lt;a href="{url}?page={nextPage}{params}" &gt;next&lt;/a&gt;&nbsp;總共:{totalNumber}筆');
-            return result;
-        });
-    });</pre>
-                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -177,67 +154,136 @@
                     </tbody>
                 </table>
                 <form method="get">
-                <table class="table table-striped table-bordered">
+                    <table class="table table-striped table-bordered" id="ExamplesGet" >
+                        <thead>
+                            <tr>
+                                <th colspan="4">Examples : GET</th>
+                            </tr>
+                        </thead>
+                        <thead>
+                            <tr>
+                                <td colspan="4" >
+                                    HTML:
+                                    <pre>   &lt;div id="page" config="default" &gt;&lt;/div&gt;</pre>
+                                    JAVASCRIPT:
+                                    <pre>
+     $( document ).ready(function() {
+        // The alias default in the PageConfig
+        $.fn.pageConfig('default', {
+            totalNumber : 100,
+            rangePage : 5,
+            pageNumber : 5,
+            nowPage : 1
+        });
+        
+        // Setting page template append to DIV
+        $('#PageGet').pagePlugin(function(r){
+            var result = '';
+            result += this.genPage('&lt;a href="{url}?page={prevPage}{urlParams}" &gt;prev&lt;/a&gt;&nbsp;');
+            result += this.genLoopPage(
+                        '&lt;a href="{url}?page={page}{urlParams}" &gt;{page}&lt;/a&gt;&nbsp;',
+                        '{page}&nbsp;'
+                      );
+            result += this.genPage('&lt;a href="{url}?page={nextPage}{urlParams}" &gt;next&lt;/a&gt;&nbsp;總共:{totalNumber}筆');
+            return result;
+        });
+    });</pre>
+                                    RUN:
+                                    <pre ><div id="PageGet" config="default" ></div></pre>
+                                    <script type="text/javascript">
+                                    $( document ).ready(function() {
+                                        $('#create').click(function(){
+                                            $.fn.pageConfig('default', {
+                                                totalNumber : $('input[name=totalNumber]').val(),
+                                                rangePage : $('input[name=rangePage]').val(),
+                                                pageNumber : $('input[name=pageNumber]').val(),
+                                                nowPage : $('input[name=nowPage]').val()
+                                            });
+                                            $('#PageGet').pagePlugin(function(r){
+                                                var result = '';
+                                                result += this.genPage('<a href="{url}?page={prevPage}{urlParams}" >prev</a>&nbsp;');
+                                                result += this.genLoopPage(
+                                                            '<a href="{url}?page={page}{urlParams}" >{page}{urlParams}</a>&nbsp;',
+                                                            '{page}&nbsp;'
+                                                          );
+                                                result += this.genPage('<a href="{url}?page={nextPage}{urlParams}" >next</a>&nbsp;總共:{totalNumber}筆');
+                                                return result;
+                                            });
+                                        });
+                                    });
+                                    </script>
+                                </td>
+                            </tr>
+                        </thead>
+                        <thead>
+                            <tr>
+                                <th>資料總筆數</th>
+                                <th>顯示範圍頁數</th>
+                                <th>每頁資料筆數</th>
+                                <th>目前所在頁數</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="text" name="totalNumber" value="100" /></td>
+                                <td><input type="text" name="rangePage" value="5" /></td>
+                                <td><input type="text" name="pageNumber" value="5" /></td>
+                                <td><input type="text" name="nowPage" value="1" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" align="center" >
+                                   <input type="button" id="create" value="create" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+                <table class="table table-striped table-bordered" id="ExamplesGet" >
                     <thead>
                         <tr>
-                            <th colspan="4">Examples</th>
+                            <th colspan="4">Examples : POST</th>
                         </tr>
                     </thead>
                     <thead>
                         <tr>
-                            <td colspan="4" align="center" >
-                                <div id="page" config="default" ></div>
+                            <td colspan="4" >
+                                RUN:
+                                <pre><div id="PagePost" config="default" bind="a" ></div></pre>
+                                <script type="text/javascript">
+                                
+                                $( document ).ready(function() {
+                                    
+                                    $.fn.pageConfig('default', {
+                                        totalNumber : 100,
+                                        rangePage : 7,
+                                        pageNumber : 10,
+                                        nowPage : 3,
+                                        paramPageName : 'nowPage',
+                                        params : { test : 1 }
+                                    });
+                                    
+                                    $('#PagePost').pagePlugin({
+                                        view : function(r){
+                                            var result = '';
+                                            result += this.genPage('<a href="javascript:void(0);" page="{prevPage}" >prev</a>&nbsp;');
+                                            result += this.genLoopPage(
+                                                        '<a href="javascript:void(0);" page="{page}" >{page}</a>&nbsp;',
+                                                        '{page}&nbsp;'
+                                                      );
+                                            result += this.genPage('<a href="javascript:void(0);" page="{nextPage}" >next</a>&nbsp;總共:{totalNumber}筆');
+                                            return result;
+                                        },
+                                        bind : 'a',
+                                        type : 'post'
+                                    });
+                                    
+                                });
+                                </script>
                             </td>
                         </tr>
                     </thead>
-                    <thead>
-                        <tr>
-                            <th>資料總筆數</th>
-                            <th>顯示範圍頁數</th>
-                            <th>每頁資料筆數</th>
-                            <th>目前所在頁數</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><input type="text" name="totalNumber" value="100" /></td>
-                            <td><input type="text" name="rangePage" value="5" /></td>
-                            <td><input type="text" name="pageNumber" value="5" /></td>
-                            <td><input type="text" name="nowPage" value="1" /></td>
-                        </tr>
-                        <tr>
-                            <td colspan="4" align="center" ><input type="button" id="create" value="create" /></td>
-                        </tr>
-                    </tbody>
                 </table>
-                </form>
             </div>
         </div>
-        
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-        <script src="js/PagePlugin.js"></script>
-        <script src="js/PagePluginConfig.js"></script>
-        <script type="text/javascript">
-        $( document ).ready(function() {
-            $('#create').click(function(){
-                $.fn.pageConfig('default', {
-                    totalNumber : $('input[name=totalNumber]').val(),
-                    rangePage : $('input[name=rangePage]').val(),
-                    pageNumber : $('input[name=pageNumber]').val(),
-                    nowPage : $('input[name=nowPage]').val()
-                });
-                $('#page').pagePlugin(function(r){
-                    var result = '';
-                    result += this.genPage('<a href="{url}?page={prevPage}{params}" >prev</a>&nbsp;');
-                    result += this.genLoopPage(
-                                '<a href="{url}?page={page}{params}" >{page}</a>&nbsp;',
-                                '{page}&nbsp;'
-                              );
-                    result += this.genPage('<a href="{url}?page={nextPage}{params}" >next</a>&nbsp;總共:{totalNumber}筆');
-                    return result;
-                });
-            });
-        });
-        </script>
     </body>
 </html>

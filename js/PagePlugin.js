@@ -26,7 +26,8 @@ PagePlugin.prototype.debug = true;
         params        : null,
         url           : null,
         page          : null,
-        rangeNumber   : null
+        rangeNumber   : null,
+        urlParams     : null
     };
     
     PagePlugin.prototype.genRange = function(){
@@ -90,7 +91,13 @@ PagePlugin.prototype.debug = true;
     
     PagePlugin.prototype.replace = function(replaces, string){
         for(var varaible in replaces){
-            string = string.replace(new RegExp('{'+varaible+'}', 'g'), replaces[varaible]);
+            if(varaible === 'params'){
+                for(var p in replaces[varaible]){
+                    string = string.replace(new RegExp('{'+varaible+'.'+p+'}', 'g'), replaces[varaible][p]);
+                }
+            }else{
+                string = string.replace(new RegExp('{'+varaible+'}', 'g'), replaces[varaible]);
+            }
         }
         return string;
     }
@@ -100,10 +107,11 @@ PagePlugin.prototype.debug = true;
         this.replaceValues.nextPage = this.nextPage;
         this.replaceValues.totalNumber = this.totalNumber;
         this.replaceValues.url = this.url;
-        this.replaceValues.params = '';
+        this.replaceValues.params = this.params;
+        this.replaceValues.urlParams = '';
         if(this.params){
             for(var name in this.params){
-                this.replaceValues.params += '&' + name + '=' + encodeURIComponent(this.params[name]);
+                this.replaceValues.urlParams += '&' + name + '=' + encodeURIComponent(this.params[name]);
             }
         }
     }
@@ -130,6 +138,17 @@ PagePlugin.prototype.debug = true;
             this.url = location.pathname;
         }
         return this;
+    }
+    
+    PagePlugin.prototype.genForm = function(){
+        var form = $('<form method="post" />');
+        return form;
+    }
+    
+    PagePlugin.prototype.post = function(e){
+        var page = $(e.target).attr('page');
+        
+        
     }
     
     PagePlugin.prototype.log = function(title, message)
@@ -161,6 +180,15 @@ PagePlugin.prototype.debug = true;
         if(config.params){
             targetConfig.params = config.params;
         }
+        if(config.type){
+            targetConfig.type = config.type;
+        }
+        if(config.paramPageName){
+            targetConfig.paramPageName = config.paramPageName;
+        }
+        if(config.bind){
+            targetConfig.bind = config.bind;
+        }
         if(config.url){
             targetConfig.url = config.url;
         }else{
@@ -179,7 +207,13 @@ PagePlugin.prototype.debug = true;
         var r = pagePlugin.apply(pagePlugin.config[config]).genView(callback);
         
         this.html(r);
+        
+        if(typeof config.type == 'string' && callback.type.toUpperCase() == 'POST'){
+            this.find(callback.bind).on('click', pagePlugin.post.bind(pagePlugin));
+        }
+        
+        this.pageClass = pagePlugin;
+        
         return this;
     };
-    
 }( jQuery ));
